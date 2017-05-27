@@ -189,6 +189,8 @@ namespace Overlay.NET.Directx {
         ///     true on success
         /// </returns>
         private bool CreateWindow() {
+
+            /* https://github.com/lolp1/Overlay.NET/issues/12 
             Handle = Native.CreateWindowEx(
                 WindowConstants.WindowExStyleDx,
                 WindowConstants.DesktopClass,
@@ -206,7 +208,14 @@ namespace Overlay.NET.Directx {
             if (Handle == IntPtr.Zero) {
                 return false;
             }
+            */
 
+            var f = new OverlayForm();
+            f.OverlayHeight = Height;
+            f.OverlayWidth = Width;
+            f.Show();
+            this.Handle = f.Handle;
+           
             ExtendFrameIntoClient();
 
             return true;
@@ -344,3 +353,4 @@ namespace Overlay.NET.Directx {
         }
     }
 }
+ 

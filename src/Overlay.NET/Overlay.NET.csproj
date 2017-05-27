@@ -56,6 +56,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -88,6 +89,9 @@
     <Compile Include="Directx\Direct2DRenderer.cs" />
     <Compile Include="Directx\DirectExternalXOverlayPlugin.cs" />
     <Compile Include="Directx\DirectXOverlayWindow.cs" />
+    <Compile Include="Directx\OverlayForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Directx\TextLayoutBuffer.cs" />
     <Compile Include="Common\WindowConstants.cs" />
     <Compile Include="OverlayPlugin.cs" />
