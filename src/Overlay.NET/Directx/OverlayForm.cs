@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Overlay.NET.Common;
 
 namespace Overlay.NET.Directx
 {
@@ -12,9 +13,6 @@ namespace Overlay.NET.Directx
     {
         [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll")]
-        static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
@@ -36,7 +34,6 @@ namespace Overlay.NET.Directx
         public static IntPtr HWND_TOPMOST = new IntPtr(-1);
         public OverlayForm()
         {
-
             int initialStyle = GetWindowLong(this.Handle, -20);
             SetWindowLong(this.Handle, -20, initialStyle | 0x80000 | 0x20);
             SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
@@ -81,10 +78,23 @@ namespace Overlay.NET.Directx
             this.TopMost = true;
             this.Visible = true;
         }
+
+        static Native.RawMargin margin = new Native.RawMargin();
+
         protected override void OnPaint(PaintEventArgs e)// create the whole form
-        {
-            int[] marg = new int[] { 0, 0, Width, Height };
-            DwmExtendFrameIntoClientArea(this.Handle, ref marg);
+        {  
+            /*
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(OnPaint));
+                return;
+            }
+            margin.cxLeftWidth = 0;
+            margin.cyTopHeight = 0;
+            margin.cxRightWidth = Width;
+            margin.cyBottomHeight = Height;
+            Native.DwmExtendFrameIntoClientArea(this.Handle, ref margin);
+            */
         }
     }
 }

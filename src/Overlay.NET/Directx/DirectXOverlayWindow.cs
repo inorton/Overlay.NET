@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Overlay.NET.Common;
+using System.Windows.Forms;
 
 namespace Overlay.NET.Directx {
     public class DirectXOverlayWindow {
@@ -95,6 +96,8 @@ namespace Overlay.NET.Directx {
         /// </summary>
         public Direct2DRenderer Graphics;
 
+        private Form overlayForm = null;
+        
         /// <summary>
         ///     Makes a transparent Fullscreen window
         /// </summary>
@@ -190,7 +193,8 @@ namespace Overlay.NET.Directx {
         /// </returns>
         private bool CreateWindow() {
 
-            /* https://github.com/lolp1/Overlay.NET/issues/12 
+#if false            
+            /* https://github.com/lolp1/Overlay.NET/issues/12 */
             Handle = Native.CreateWindowEx(
                 WindowConstants.WindowExStyleDx,
                 WindowConstants.DesktopClass,
@@ -208,17 +212,33 @@ namespace Overlay.NET.Directx {
             if (Handle == IntPtr.Zero) {
                 return false;
             }
-            */
 
+#else
             var f = new OverlayForm();
+            this.overlayForm = f;
+            f.ShowInTaskbar = false;           
+             
             f.OverlayHeight = Height;
             f.OverlayWidth = Width;
             f.Show();
             this.Handle = f.Handle;
-           
+#endif
+
             ExtendFrameIntoClient();
 
             return true;
+        }
+
+        private void relocateWindow()
+        {
+            Native.Rect bounds;
+            Native.GetWindowRect(ParentWindow, out bounds);
+
+            if (X != bounds.Left || Y != bounds.Top || Width != bounds.Right - bounds.Left ||
+                Height != bounds.Bottom - bounds.Top)
+            {
+                SetBounds(bounds.Left, bounds.Top, bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
+            }
         }
 
         /// <summary>
@@ -227,13 +247,12 @@ namespace Overlay.NET.Directx {
         private void ParentServiceThread() {
             while (!IsDisposing) {
                 Thread.Sleep(10);
-
-                Native.Rect bounds;
-                Native.GetWindowRect(ParentWindow, out bounds);
-
-                if (X != bounds.Left || Y != bounds.Top || Width != bounds.Right - bounds.Left ||
-                    Height != bounds.Bottom - bounds.Top) {
-                    SetBounds(bounds.Left, bounds.Top, bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
+                
+                if ( overlayForm != null && overlayForm.InvokeRequired) {                    
+                    overlayForm.Invoke(new MethodInvoker(relocateWindow));
+                } else
+                {
+                    relocateWindow();
                 }
             }
         }
